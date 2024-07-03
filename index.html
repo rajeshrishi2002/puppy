@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puppy🐶</title>
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+</head>
+<body>
+    <div class="dog">
+        <img class="tail" src="https://assets.codepen.io/721952/dogTail.png"/>
+        <img class="body" src="https://assets.codepen.io/721952/dogBody.png"/>
+        <div class="head">
+          <img src="https://assets.codepen.io/721952/dogHead.png"/>
+          <img class="lids" src="https://assets.codepen.io/721952/dogLids.png"/>
+        </div>
+      </div>
+      
+      <div class="ball">
+        <img class="ball_img" src="https://assets.codepen.io/721952/tennis_ball.png" />
+        <img class="ball_shadow" src="https://assets.codepen.io/721952/tennis_ball_shadow.png" />
+      </div>
+      
+      <audio class="bark" src="puppy.mp3"></audio>
+</body>
+<style>
+html, body {
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+}
+
+body {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background-image: url(dogbg.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 90% 50%;
+}
+
+img, div {
+  position:absolute;
+}
+
+.dog, .dog div {
+  width:576px;
+  height:600px;
+}
+
+.ball {
+  width:120px;
+  height:120px;
+  left:0;
+}
+
+.dog, .ball {
+  transform:scale(0.75);
+}
+</style>
+<script>
+
+gsap.timeline({onStart:blink})
+  .set('img', {attr:{'draggable':'false'}})
+  .fromTo('.ball', {x:-120, y:275, xPercent:-50},{duration:2, x:innerWidth/2}, 0)
+  .fromTo('.ball_img', {rotate:-innerWidth/2-60},{duration:2, rotate:0}, 0)
+  .to('.head', {duration:0.4, yPercent:0.3, ease:'sine.inOut', repeat:-1, yoyo:true}, 0)
+  .add(wag, 1)
+
+function blink(){
+  gsap.fromTo('.lids', {
+    opacity: 1
+  },{
+    duration: gsap.utils.random(0.2, 0.6),
+    ease: 'steps(1)',
+    opacity: 0,
+    onComplete:()=> gsap.delayedCall(gsap.utils.random(1,2), blink)
+  })
+}
+
+function wag(){
+  gsap.fromTo('.tail', {
+    transformOrigin: '176px 520px',
+    rotate: 0
+  },{
+    duration: gsap.utils.random(0.15, 0.3),
+    rotate: 'random(5,10)',
+    skewX: 'random(15,25)',
+    yoyo: true,
+    repeat: 3,
+    onComplete:()=> gsap.delayedCall(gsap.utils.random(1,2), wag)
+  }) 
+}
+
+window.onpointermove =(e)=> {
+  gsap.to('.head', {
+    transformOrigin: '300px 200px',
+    rotate: gsap.utils.interpolate(-11, 11, e.x/innerWidth),
+    x: gsap.utils.interpolate(9, -9, e.x/innerWidth),
+    y: gsap.utils.interpolate(-2, 6, e.y/innerHeight)
+  })
+  
+  gsap.to('.ball', {
+    duration:1,
+    x:e.x
+  })
+  
+  gsap.to('.ball_img', {
+    duration:1,
+    rotate: gsap.utils.interpolate(-innerWidth/2,innerWidth/2,e.x/innerWidth)
+  })  
+}
+
+
+const barkSnd = document.querySelector('.bark')
+window.onclick = ()=> barkSnd.play()
+</script>
+</html>
